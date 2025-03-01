@@ -24,11 +24,20 @@ def NguoiChon():
     InLuoi()
 
 def MayChon():
-    oTrong = [i for i in range(9) if isinstance(luoi[i], int)]
-    may = randint(0, len(oTrong) - 1)
-    luoi[oTrong[may]] = 'o'
-    print(f'Máy đánh ô: {oTrong[may]}')
-    InLuoi()
+    best_select = -float('inf')
+    best_move = None
+    for i in range(9):
+        if(isinstance(luoi[i], int)):
+            luoi[i] = 'o'
+            select = Minimax(luoi, 0, False)
+            luoi[i] = i
+            if select > best_select:
+                best_select = select
+                best_move = i
+    if(best_move is not None):
+        luoi[best_move] = 'o'
+        print(f'Máy đánh ô: {best_move}')
+        InLuoi()
 
 def KiemTraThang():
     thang = [
@@ -40,6 +49,34 @@ def KiemTraThang():
         if(luoi[line[0]] == luoi[line[1]] == luoi[line[2]] ):
             return luoi[line[0]]
     return None
+
+def Minimax(board, depth, is_maximizing):
+    winner = KiemTraThang()
+    if(winner == '0'):
+        return 1
+    elif (winner == 'x'):
+        return -1
+    elif not Trong():
+        return 0
+
+    if is_maximizing:
+        best_select = -float('inf')
+        for i in range(9):
+            if (isinstance(board[i], int)):
+                board[i] = 'o'
+                select = Minimax(board, depth + 1, False)
+                board[i] = i
+                best_select = max(select, best_select)
+        return best_select
+    else:
+        best_select = float('inf')
+        for i in range(9):
+            if(isinstance(board[i], int)):
+                board[i] = 'x'
+                select = Minimax(board, depth + 1, True)
+                board[i] = i
+                best_select = min(select, best_select)
+        return best_select
 
 InLuoi()
 while(Trong()):
