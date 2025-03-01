@@ -1,6 +1,5 @@
 from random import randint
 
-from nltk.internals import read_int
 
 luoi = [0,1,2,3,4,5,6,7,8]
 
@@ -25,12 +24,10 @@ def NguoiChon():
     InLuoi()
 
 def MayChon():
-    may = randint(0,8)
-    if luoi[may] == 'x' or luoi[may] == 'o':
-        may = randint(0,8)
-    else:
-        luoi[may] = 'o'
-    print(f'Máy đánh ô: {may}')
+    oTrong = [i for i in range(9) if isinstance(luoi[i], int)]
+    may = randint(0, len(oTrong) - 1)
+    luoi[oTrong[may]] = 'o'
+    print(f'Máy đánh ô: {oTrong[may]}')
     InLuoi()
 
 def KiemTraThang():
@@ -50,8 +47,14 @@ while(Trong()):
     if KiemTraThang() == 'x':
         print('Chúc mừng! Bạn đã thắng!')
         break
+    if not Trong():
+        print("Trò chơi hòa!")
+        break
     MayChon()
     if KiemTraThang() == 'o':
         print("Máy đã thắng! Bạn thua cuộc!")
+        break
+    if not Trong():
+        print("Trò chơi hòa!")
         break
     print('============================')
