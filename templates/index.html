@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Cờ Caro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <h1>Game Cờ Caro</h1>
+    <div class="board">
+        {% for i in range(9) %}
+            <div class="cell" data-index="{{ i }}"></div>
+        {% endfor %}
+    </div>
+    <p id="message"></p>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

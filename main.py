@@ -1,7 +1,9 @@
 from random import randint
+from flask import Flask, render_template, jsonify, request
 
 
-luoi = [0,1,2,3,4,5,6,7,8]
+app = Flask(__name__)
+luoi = list(range(9))
 
 def InLuoi():
     for i in range(0,9,3):
@@ -21,7 +23,6 @@ def NguoiChon():
         nguoi = int(input('Vui lòng chọn lại: '))
     else:
         luoi[nguoi] = 'x'
-    InLuoi()
 
 def MayChon():
     best_select = -float('inf')
@@ -36,8 +37,7 @@ def MayChon():
                 best_move = i
     if(best_move is not None):
         luoi[best_move] = 'o'
-        print(f'Máy đánh ô: {best_move}')
-        InLuoi()
+        return best_move
 
 def KiemTraThang():
     thang = [
@@ -78,20 +78,38 @@ def Minimax(board, depth, is_maximizing):
                 best_select = min(select, best_select)
         return best_select
 
-InLuoi()
-while(Trong()):
-    NguoiChon()
-    if KiemTraThang() == 'x':
-        print('Chúc mừng! Bạn đã thắng!')
-        break
-    if not Trong():
-        print("Trò chơi hòa!")
-        break
-    MayChon()
-    if KiemTraThang() == 'o':
-        print("Máy đã thắng! Bạn thua cuộc!")
-        break
-    if not Trong():
-        print("Trò chơi hòa!")
-        break
-    print('============================')
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/play', methods=['POST'])
+def play():
+    data = request.json
+    nguoi = data.get('position')
+
+    if isinstance(luoi[nguoi], int):
+        luoi[nguoi] = 'x'
+
+        if(KiemTraThang() == 'x'):
+            return jsonify({'board': luoi, 'message': 'Bạn đã thắng!', 'winner': 'x'})
+
+        if not Trong():
+            return jsonify({'board': luoi, 'message': 'Trò chơi hòa!', 'winner': 'draw'})
+
+        may_move = MayChon()
+
+        if KiemTraThang() == 'o':
+            return jsonify({'board': luoi, 'message': 'Máy đã thắng!', 'winner': 'o'})
+
+        return jsonify({'board': luoi, 'message': f'Máy đánh ô: {may_move}', 'winner': None})
+
+    return jsonify({'board': luoi, 'message': 'Ô này đã được chọn, vui lòng chọn ô khác.', 'winner': None})
+
+@app.route('/reset', methods=['POST'])
+def reset():
+    global luoi
+    luoi = list(range(9))
+    return jsonify({'board': luoi, 'message': 'Ván mới đã bắt đầu!'})
+
+if __name__ == '__main__':
+    app.run(debug=True)
